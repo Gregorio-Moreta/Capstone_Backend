@@ -3,7 +3,7 @@ class QuotesController < ApplicationController
 
   # GET /quotes
   def index
-    @quotes = Quote.all
+    @quotes = get_quotes 
 
     render json: @quotes
   end
@@ -18,7 +18,7 @@ class QuotesController < ApplicationController
     @quote = Quote.new(quote_params)
 
     if @quote.save
-      render json: @quote, status: :created, location: @quote
+      render json: get_quotes, status: :created, location: @quote
     else
       render json: @quote.errors, status: :unprocessable_entity
     end
@@ -27,7 +27,7 @@ class QuotesController < ApplicationController
   # PATCH/PUT /quotes/1
   def update
     if @quote.update(quote_params)
-      render json: @quote
+      render json: get_quotes
     else
       render json: @quote.errors, status: :unprocessable_entity
     end
@@ -36,9 +36,15 @@ class QuotesController < ApplicationController
   # DELETE /quotes/1
   def destroy
     @quote.destroy
+    render json: get_quotes
   end
 
   private
+
+    def get_quotes
+      Quote.order('created_at DESC')
+    end
+    
     # Use callbacks to share common setup or constraints between actions.
     def set_quote
       @quote = Quote.find(params[:id])
